@@ -79,7 +79,7 @@ jobs:
         sudo apt-get update && sudo apt-get install ${packages[@]} ${lv2lint_packages[@]}
         pip3 install meson
     - name: Install abseil
-      if: ${{ github.ref_type == 'branch' }}
+      if: github.ref_type == 'branch'
       run: |
         sudo apt-get install \
           libabsl-dev \
@@ -147,7 +147,7 @@ jobs:
         gcc -v
         xcodebuild -version
     - name: Install dependencies
-      if: ${{ github.ref_type == 'branch' }}
+      if: github.ref_type == 'branch'
       run: brew install abseil
     - name: Checkout
       uses: actions/checkout@v3
@@ -268,7 +268,7 @@ jobs:
           --parallel 2 `
           --verbose `
     - name: Install pluginval
-      if: ${{ matrix.platform == 'x64' }}
+      if: matrix.platform == 'x64'
       run: |
         Invoke-WebRequest `
           https://github.com/Tracktion/pluginval/releases/download/latest_release/pluginval_Windows.zip `
@@ -280,7 +280,7 @@ jobs:
           -Append
         pluginval\pluginval --version
     - name: Validate VST3
-      if: ${{ matrix.platform == 'x64' }}
+      if: matrix.platform == 'x64'
       working-directory: ${{ github.workspace }}/build
       run: pluginval --validate-in-process --validate sfizz.vst3
     - name: Create installer
@@ -295,7 +295,7 @@ jobs:
         path: "${{ github.workspace }}/build/${{ env.install_name }}.exe"
 
   archive_source_code:
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     name: Source code archive
     runs-on: ubuntu-20.04
     env:
@@ -321,7 +321,7 @@ jobs:
         path: "${{ github.workspace }}/${{ env.install_name }}.tar.gz"
 
   build_for_mod:
-    if: ${{ false }} # DISABLED: Old image which doesn't work with CMake > 3.5
+    if: false # DISABLED: Old image which doesn't work with CMake > 3.5
     name: MOD
     runs-on: ubuntu-20.04
     container:
@@ -369,11 +369,11 @@ jobs:
         path: "${{ runner.workspace }}/${{ env.install_name }}.tar.gz"
 
   deploy:
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-20.04
     needs:
       - build_for_macos
-      # - build_for_mod
+      # build_for_mod
       - build_for_windows
       - archive_source_code
     steps:
@@ -398,7 +398,7 @@ jobs:
           name: Source code tarball
 
       - name: MOD download
-        if: ${{ false }} # DISABLED: See comment above
+        if: false # DISABLED: See comment above
         uses: actions/download-artifact@v3
         with:
           name: MOD devices tarball
